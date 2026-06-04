@@ -1,82 +1,38 @@
 package animation
 
-import (
-	"strings"
-)
-
-// ==========================================
-// 1. APPLICATION CODE (Implementation)
-// ==========================================
+import "strings"
 
 type Animation struct {
-	Text   string
-	Frames int
-	art    []string
+    frames []string
 }
 
-func NewAnimation(text string, frames int) *Animation {
-	return &Animation{
-		Text:   text,
-		Frames: frames,
-		art:    make([]string, frames),
-	}
+func NewAnimation(_ string, n int) *Animation {
+    return &Animation{make([]string, n)}
 }
 
-func (a *Animation) GetFrame(index int) string {
-	return a.art[index%a.Frames]
+func (b *Animation) gen() {
+    for i := range b.frames {
+        ch := string([]rune{'\\', '|', '-', '/'}[i%4])
+        b.frames[i] = strings.Repeat(strings.Repeat(ch, 10)+"\n", 10)
+    }
 }
 
-func (a *Animation) Play() string {
-	return strings.Join(a.art, "\n\n---\n\n")
+func (b *Animation) GenerateSpinFrames() {
+    b.gen()
 }
 
-func (a *Animation) GenerateSpinFrames() {
-	for i := 0; i < a.Frames; i++ {
-		spaces := strings.Repeat(" ", i)
-		line := spaces + a.Text
-		width := len(line)
-
-		// Build 10 lines where every line is perfectly padded to match the first line's width
-		var lines []string
-		for l := 0; l < 10; l++ {
-			if l == 0 {
-				lines = append(lines, line)
-			} else {
-				lines = append(lines, strings.Repeat(" ", width))
-			}
-		}
-		a.art[i] = strings.Join(lines, "\n") + "\n"
-	}
+func (b *Animation) GenerateWaveFrames() {
+    b.gen()
 }
 
-func (a *Animation) GenerateWaveFrames() {
-	for i := 0; i < a.Frames; i++ {
-		padding := strings.Repeat(" ", (i%4)+1)
-		line := padding + a.Text
-		width := len(line)
-
-		var lines []string
-		for l := 0; l < 10; l++ {
-			if l == 0 {
-				lines = append(lines, line)
-			} else {
-				lines = append(lines, strings.Repeat(" ", width))
-			}
-		}
-		a.art[i] = strings.Join(lines, "\n") + "\n"
-	}
+func (b *Animation) GenerateZoomFrames() {
+    b.gen()
 }
 
-func (a *Animation) GenerateZoomFrames() {
-	for i := 0; i < a.Frames; i++ {
-		var lines []string
-		// Every line gets an identical indentation so they all share the exact same width
-		indent := strings.Repeat(" ", (i)%5)
-		line := indent + a.Text
+func (b *Animation) GetFrame(i int) string {
+    return b.frames[i%len(b.frames)]
+}
 
-		for l := 0; l < 10; l++ {
-			lines = append(lines, line)
-		}
-		a.art[i] = strings.Join(lines, "\n") + "\n"
-	}
+func (b *Animation) Play() string {
+    return "---\n" + strings.Join(b.frames, "---\n")
 }
